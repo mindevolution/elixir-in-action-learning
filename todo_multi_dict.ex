@@ -22,13 +22,13 @@ defmodule TodoList do
   end
 end
 
-entry1 = %{date: ~D[2021-01-01], title: "New Year's Day"}
-entry2 = %{date: ~D[2021-01-01], title: "Buy champagne"}
+entry1 = %{date: ~D[2021-01-01], title: "New Year's Day updated"}
+entry2 = %{date: ~D[2021-01-01], title: "Buy champagne updated"}
 entry3 = %{date: ~D[2021-01-02], title: "Buy aspirin"}
 todo_list = TodoList.new |>
   TodoList.add_entry(entry1) |>
   TodoList.add_entry(entry2) |>
   TodoList.add_entry(entry3)
 
-IO.puts(TodoList.entries(todo_list, ~D[2021-01-01]))
-IO.puts(TodoList.entries(todo_list, ~D[2021-01-02]))
+# IO.puts(TodoList.entries(todo_list, ~D[2021-01-01]))
+# IO.puts(TodoList.entries(todo_list, ~D[2021-01-02]))
