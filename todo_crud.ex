@@ -38,7 +38,31 @@ defmodule TodoList do
     new_entries = Map.delete(todo_list.entries, entry_id)
     %TodoList{todo_list | entries: new_entries}
   end
+
+  def new(entries \\ []) do
+    Enum.reduce(
+      entries,
+      new(),
+      &add_entry(&2, &1)
+    )
+  end
 end
+
+defmodule TodoList.CsvImporter do
+  def import(file) do
+    File.stream!(file)
+    |> Stream.map(&String.trim_trailing/1)
+    |> Stream.map(&parse_entry/1)
+    |> TodoList.new()
+  end
+
+  def parse_entry(entry) do
+    [date, title] = String.split(entry, ",")
+    %{date: Date.from_iso8601!(date), title: title}
+  end
+end
+
+
 
 todo_list = TodoList.new() |>
   TodoList.add_entry(%{date: ~D[2021-01-01], title: "New Year's Day"}) |>
