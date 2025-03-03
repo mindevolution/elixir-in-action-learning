@@ -46,6 +46,32 @@ defmodule TodoList do
       &add_entry(&2, &1)
     )
   end
+
+  defimpl String.Chars do
+    def to_string(todo_list) do
+      Enum.map(todo_list.entries, fn {id, entry} ->
+        "#{id}: #{entry.date} - #{entry.title}"
+      end)
+      |> Enum.join("\n")
+    end
+  end
+end
+
+defimpl Collectable, for: TodoList do
+  def into(original) do
+    {original, &into_callback/2}
+  end
+
+  defp into_callback(todo_list, {:cont, entry}) do
+    TodoList.add_entry(todo_list, entry)
+  end
+
+  defp into_callback(todo_list, :done) do
+    todo_list
+  end
+  defp into_callback(_todo_list, :halt) do
+    :ok
+  end
 end
 
 defmodule TodoList.CsvImporter do
