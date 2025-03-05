@@ -29,3 +29,19 @@ defmodule DatabaseServer do
     end
   end
 end
+
+pool = Enum.map(1..10000, fn _ -> DatabaseServer.start end)
+Enum.each(
+  1..100,
+  fn query_def ->
+    server_pid = Enum.random(pool)
+    DatabaseServer.run_async(server_pid, query_def)
+  end
+)
+
+Enum.each(
+  1..100,
+  fn _ ->
+    IO.inspect(DatabaseServer.get_result())
+  end
+)
