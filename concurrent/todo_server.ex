@@ -16,8 +16,12 @@ defmodule TodoServer do
     send(todo_server, {:add_entry, new_entry})
   end
 
-  def update_entry(todo_server, entry_id, entry) do
-    send(todo_server, {:update_entry, entry_id, entry})
+  def update_entry(todo_server, entry_id, update_func) do
+    send(todo_server, {:update_entry, entry_id, update_func})
+  end
+
+  def delete_entry(todo_server, entry) do
+    send(todo_server, {:delete, entry})
   end
 
   defp process_message(todo_list, {:add_entry, new_entry}) do
@@ -29,9 +33,12 @@ defmodule TodoServer do
     todo_list
   end
 
-  defp process_message(todo_list, {:update_entry, caller, date}) do
-    send(caller, {:entries, TodoList.update_entry(todo_list, date)})
-    todo_list
+  defp process_message(todo_list, {:update_entry, entry_id, update_func}) do
+    TodoList.update_entry(todo_list, entry_id, update_func)
+  end
+
+  defp process_message(todo_list, {:delete, entry}) do
+    TodoList.delete_entry(todo_list, entry)
   end
 
   def entries(todo_server, date) do
@@ -101,3 +108,17 @@ defmodule TodoList do
     end
   end
 end
+
+todo_server = TodoServer.start()
+TodoServer.add_entry(todo_server, %{date: ~D[2021-01-01], title: "New Year's Day"})
+TodoServer.add_entry(todo_server, %{date: ~D[2021-01-01], title: "Buy champagne"})
+TodoServer.add_entry(todo_server, %{date: ~D[2021-01-02], title: "Buy book"})
+TodoServer.add_entry(todo_server, %{date: ~D[2021-01-02], title: "Go shopping"})
+TodoServer.add_entry(todo_server, %{date: ~D[2021-01-03], title: "Buy food"})
+TodoServer.add_entry(todo_server, %{date: ~D[2021-01-03], title: "Buy food again"})
+
+TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
+TodoServer.update_entry(todo_server, 5, fn entry -> Map.put(entry, :title, "Buy more food") end)
+TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
+TodoServer.delete_entry(todo_server, 5)
+TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
