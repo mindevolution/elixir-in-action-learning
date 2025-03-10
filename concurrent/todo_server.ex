@@ -1,6 +1,8 @@
 defmodule TodoServer do
   def start do
-    spawn(fn -> loop(TodoList.new()) end)
+    todo_server = spawn(fn -> loop(TodoList.new()) end)
+    Process.register(todo_server, :todo_server)
+    todo_server
   end
 
   defp loop(todo_list) do
@@ -12,8 +14,8 @@ defmodule TodoServer do
     loop(new_todo_list)
   end
 
-  def add_entry(todo_server, new_entry) do
-    send(todo_server, {:add_entry, new_entry})
+  def add_entry(new_entry) do
+    send(:todo_server, {:add_entry, new_entry})
   end
 
   def update_entry(todo_server, entry_id, update_func) do
@@ -41,8 +43,8 @@ defmodule TodoServer do
     TodoList.delete_entry(todo_list, entry)
   end
 
-  def entries(todo_server, date) do
-    send(todo_server, {:entries, self(), date})
+  def entries(date) do
+    send(:todo_server, {:entries, self(), date})
     receive do
       {:entries, entries} -> entries
     after 5000 -> {:error, :timeout}
@@ -110,15 +112,15 @@ defmodule TodoList do
 end
 
 todo_server = TodoServer.start()
-TodoServer.add_entry(todo_server, %{date: ~D[2021-01-01], title: "New Year's Day"})
-TodoServer.add_entry(todo_server, %{date: ~D[2021-01-01], title: "Buy champagne"})
-TodoServer.add_entry(todo_server, %{date: ~D[2021-01-02], title: "Buy book"})
-TodoServer.add_entry(todo_server, %{date: ~D[2021-01-02], title: "Go shopping"})
-TodoServer.add_entry(todo_server, %{date: ~D[2021-01-03], title: "Buy food"})
-TodoServer.add_entry(todo_server, %{date: ~D[2021-01-03], title: "Buy food again"})
+TodoServer.add_entry(%{date: ~D[2021-01-01], title: "New Year's Day"})
+TodoServer.add_entry(%{date: ~D[2021-01-01], title: "Buy champagne"})
+TodoServer.add_entry(%{date: ~D[2021-01-02], title: "Buy book"})
+TodoServer.add_entry(%{date: ~D[2021-01-02], title: "Go shopping"})
+TodoServer.add_entry(%{date: ~D[2021-01-03], title: "Buy food"})
+TodoServer.add_entry(%{date: ~D[2021-01-03], title: "Buy food again"})
 
-TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
+TodoServer.entries(~D[2021-01-03]) |> IO.inspect()
 TodoServer.update_entry(todo_server, 5, fn entry -> Map.put(entry, :title, "Buy more food") end)
-TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
-TodoServer.delete_entry(todo_server, 5)
-TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
+# TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
+# TodoServer.delete_entry(todo_server, 5)
+# TodoServer.entries(todo_server, ~D[2021-01-03]) |> IO.inspect()
