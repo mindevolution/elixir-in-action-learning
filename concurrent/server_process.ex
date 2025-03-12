@@ -28,6 +28,19 @@ defmodule ServerProcess do
 end
 
 defmodule KeyValueStore do
+  def start do
+    IO.puts(__MODULE__)
+    ServerProcess.start(__MODULE__)
+  end
+
+  def put(pid, key, value) do
+    ServerProcess.call(pid, {:put, key, value})
+  end
+
+  def get(pid, key) do
+    ServerProcess.call(pid, {:get, key})
+  end
+
   def init() do
     %{}
   end
@@ -41,6 +54,10 @@ defmodule KeyValueStore do
   end
 end
 
-pid = ServerProcess.start(KeyValueStore)
-ServerProcess.call(pid, {:put, :name, "Elixir in Action"})
-ServerProcess.call(pid, {:get, :name}) |> IO.puts
+# pid = ServerProcess.start(KeyValueStore)
+# ServerProcess.call(pid, {:put, :name, "Elixir in Action"})
+# ServerProcess.call(pid, {:get, :name}) |> IO.puts
+#
+pid = KeyValueStore.start
+KeyValueStore.put(pid, :name, "Elixir in Action")
+KeyValueStore.get(pid, :name) |> IO.puts
