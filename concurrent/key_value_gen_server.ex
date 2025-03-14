@@ -9,8 +9,8 @@ defmodule KeyValueGenServer do
     GenServer.cast(__MODULE__, {:put, key, value})
   end
 
-  def get(pid, key) do
-    GenServer.call(pid, {:get, key})
+  def get(key) do
+    GenServer.call(__MODULE__, {:get, key})
   end
 
   def init(_) do
@@ -32,8 +32,8 @@ defmodule KeyValueGenServer do
 
 end
 
-{:ok, pid} = KeyValueGenServer.start()
+KeyValueGenServer.start()
 KeyValueGenServer.put(:name, "Elixir")
-KeyValueGenServer.get(pid, :name) |> IO.inspect()
+KeyValueGenServer.get(:name) |> IO.inspect()
 
 # c("key_value_gen_server.ex")
