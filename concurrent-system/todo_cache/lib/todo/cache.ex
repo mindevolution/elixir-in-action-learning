@@ -9,7 +9,6 @@ defmodule Todo.Cache do
   end
 
   def handle_call({:server_process, todo_list_name}, _, todo_servers) do
-    Map.fetch(todo_servers, todo_list_name) |>IO.inspect
     case Map.fetch(todo_servers, todo_list_name) do
       {:ok, todo_server} ->
         {:reply, todo_server, todo_servers}
@@ -35,9 +34,9 @@ defmodule Todo.Cache do
 
 end
 
-{:ok, cache} = Todo.Cache.start()
+# {:ok, cache} = Todo.Cache.start()
 
-Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
-Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
-Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
-Todo.Cache.server_process(cache, "Alice's list") |> IO.inspect
+# Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
+# Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
+# Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
+# Todo.Cache.server_process(cache, "Alice's list") |> IO.inspect
