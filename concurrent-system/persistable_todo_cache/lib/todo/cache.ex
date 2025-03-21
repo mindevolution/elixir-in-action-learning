@@ -5,6 +5,7 @@ defmodule Todo.Cache do
   use GenServer
 
   def init(_) do
+    Todo.Database.start()
     {:ok, %{}}
   end
 
@@ -13,7 +14,7 @@ defmodule Todo.Cache do
       {:ok, todo_server} ->
         {:reply, todo_server, todo_servers}
       :error ->
-        {:ok, new_server} = Todo.Server.start()
+        {:ok, new_server} = Todo.Server.start(todo_list_name)
         {
           :reply,
           new_server,
@@ -40,3 +41,8 @@ end
 # Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
 # Todo.Cache.server_process(cache, "Bob's list") |> IO.inspect
 # Todo.Cache.server_process(cache, "Alice's list") |> IO.inspect
+#
+
+{:ok, cache} = Todo.Cache.start()
+bobs_list = Todo.Cache.server_process(cache, "bobs_list")
+Todo.Server.add_entry(bobs_list, %{date: "2020-01-01", title: "Buy milk"})
