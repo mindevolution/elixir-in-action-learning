@@ -1,11 +1,17 @@
 defmodule Todo.Server do
   use GenServer
-  def start(list_name) do
-    GenServer.start(__MODULE__, {list_name, Todo.List.new()})
+  def start(name) do
+    GenServer.start(__MODULE__, name)
   end
 
-  def init(todo_list) do
-    {:ok, todo_list}
+  def init(name) do
+    "init name -> " <> name |> IO.inspect
+    {:ok, {name, nil}, {:continue, :init}}
+  end
+
+  def handle_continue(:init, {name, nil}) do
+    todo_list = Todo.Database.get(name) || Todo.List.new()
+    {:noreply, {name, todo_list}}
   end
 
   def add_entry(todo_server, new_entry) do

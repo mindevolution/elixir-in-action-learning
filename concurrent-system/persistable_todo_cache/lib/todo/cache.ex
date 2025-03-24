@@ -43,6 +43,6 @@ end
 # Todo.Cache.server_process(cache, "Alice's list") |> IO.inspect
 #
 
-{:ok, cache} = Todo.Cache.start()
-bobs_list = Todo.Cache.server_process(cache, "bobs_list")
-Todo.Server.add_entry(bobs_list, %{date: "2020-01-01", title: "Buy milk"})
+# {:ok, cache} = Todo.Cache.start()
+# bobs_list = Todo.Cache.server_process(cache, "bobs_list")
+# Todo.Server.add_entry(bobs_list, %{date: "2020-01-01", title: "Buy milk"})

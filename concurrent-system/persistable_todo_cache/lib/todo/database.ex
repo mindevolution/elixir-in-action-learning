@@ -32,7 +32,7 @@ defmodule Todo.Database do
 
   def handle_call({:get, key}, _from, state) do
     case File.read(file_name(key)) do
-      {:ok, binary} -> {:reply, {:ok, :erlang.binary_to_term(binary)}, state}
+      {:ok, binary} -> {:reply, :erlang.binary_to_term(binary), state}
       {:error, :enoent} -> {:reply, :not_found, state}
     end
   end
